@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/models/product.dart';
+import '../../../core/domain/entities/product.dart';
 import '../../../core/theme.dart';
 import '../../../core/widgets/primary_button.dart';
 import '../widgets/color_selector.dart';
@@ -22,9 +22,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    _selectedColor = widget.product.colors.isEmpty
-        ? null
-        : widget.product.colors.first;
+    final colors = _productColors;
+    _selectedColor = colors.isEmpty ? null : colors.first;
     _selectedSize = widget.product.sizes.isEmpty
         ? null
         : widget.product.sizes.first;
@@ -136,7 +135,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       ),
                       const SizedBox(height: 12),
                       ColorSelector(
-                        colors: widget.product.colors,
+                        colors: _productColors,
                         selectedColor: _selectedColor!,
                         onColorSelected: (color) {
                           setState(() {
@@ -191,4 +190,15 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       ),
     );
   }
+
+  List<Color> get _productColors => widget.product.colors
+      .map(
+        (value) => Color.fromARGB(
+          (value >> 24) & 0xFF,
+          (value >> 16) & 0xFF,
+          (value >> 8) & 0xFF,
+          value & 0xFF,
+        ),
+      )
+      .toList();
 }

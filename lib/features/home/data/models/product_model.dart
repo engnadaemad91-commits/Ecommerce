@@ -1,29 +1,19 @@
-import 'package:flutter/material.dart';
+import '../../../../core/domain/entities/product.dart';
 
-class Product {
-  final String id;
-  final String name;
-  final String description;
-  final double price;
-  final String imageUrl;
-  final List<Color> colors;
-  final List<String> sizes;
-  final int? categoryId;
-  final String? categoryName;
-
-  Product({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.price,
-    required this.imageUrl,
-    required this.colors,
-    required this.sizes,
-    this.categoryId,
-    this.categoryName,
+class ProductModel extends Product {
+  ProductModel({
+    required super.id,
+    required super.name,
+    required super.description,
+    required super.price,
+    required super.imageUrl,
+    required super.colors,
+    required super.sizes,
+    super.categoryId,
+    super.categoryName,
   });
 
-  factory Product.fromJson(Map<String, dynamic> json) {
+  factory ProductModel.fromJson(Map<String, dynamic> json) {
     final id = json['id'];
     final name = json['title'];
     final description = json['description'];
@@ -56,7 +46,7 @@ class Product {
         ? category['name'] as String
         : null;
 
-    return Product(
+    return ProductModel(
       id: id.toString(),
       name: name,
       description: description,

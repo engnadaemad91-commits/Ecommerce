@@ -3,16 +3,21 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
-import '../data/home_repository.dart';
-import '../models/home_category.dart';
-import '../../../core/models/product.dart';
+import '../../../core/domain/entities/product.dart';
+import '../domain/entities/home_category.dart';
+import '../domain/usecases/get_home_categories.dart';
+import '../domain/usecases/get_home_products.dart';
 
 enum HomeStatus { initial, loading, loaded, error }
 
 class HomeProvider extends ChangeNotifier {
-  HomeProvider(this._repository);
+  HomeProvider({
+    required this.getHomeProducts,
+    required this.getHomeCategories,
+  });
 
-  final HomeRepository _repository;
+  final GetHomeProducts getHomeProducts;
+  final GetHomeCategories getHomeCategories;
   final List<HomeCategory> categories = [];
   List<Product> products = [];
   HomeStatus status = HomeStatus.initial;
@@ -31,8 +36,8 @@ class HomeProvider extends ChangeNotifier {
     errorMessage = null;
     notifyListeners();
 
-    final categoriesFuture = _repository.fetchCategories();
-    final productsFuture = _repository.fetchProducts(
+    final categoriesFuture = getHomeCategories();
+    final productsFuture = getHomeProducts(
       categoryId: selectedCategoryId,
       title: searchQuery,
     );
@@ -84,7 +89,7 @@ class HomeProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final results = await _repository.fetchProducts(
+      final results = await getHomeProducts(
         categoryId: selectedCategoryId,
         title: searchQuery,
       );

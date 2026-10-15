@@ -5,21 +5,22 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
-import 'package:ecommerce_app_huma_volve/core/models/product.dart';
-import 'package:ecommerce_app_huma_volve/features/home/data/home_repository.dart';
-import 'package:ecommerce_app_huma_volve/features/home/models/home_category.dart';
+import 'package:ecommerce_app_huma_volve/core/domain/entities/product.dart';
+import 'package:ecommerce_app_huma_volve/features/home/domain/entities/home_category.dart';
+import 'package:ecommerce_app_huma_volve/features/home/domain/repositories/home_repository.dart';
+import 'package:ecommerce_app_huma_volve/features/home/domain/usecases/get_home_categories.dart';
+import 'package:ecommerce_app_huma_volve/features/home/domain/usecases/get_home_products.dart';
 import 'package:ecommerce_app_huma_volve/features/home/providers/home_provider.dart';
 import 'package:ecommerce_app_huma_volve/features/home/screens/home_screen.dart';
 
 void main() {
   test('home provider loads products and filters by category', () async {
     final repository = FakeHomeRepository();
-    final home = HomeProvider(repository);
+    final home = createHomeProvider(repository);
 
     await home.load();
 
@@ -37,7 +38,7 @@ void main() {
   testWidgets('home screen displays API products and categories', (
     tester,
   ) async {
-    final home = HomeProvider(FakeHomeRepository());
+    final home = createHomeProvider(FakeHomeRepository());
     await home.load();
 
     await tester.pumpWidget(
@@ -68,9 +69,14 @@ void main() {
   });
 }
 
-class FakeHomeRepository extends HomeRepository {
-  FakeHomeRepository() : super(dio: Dio());
+HomeProvider createHomeProvider(HomeRepository repository) {
+  return HomeProvider(
+    getHomeProducts: GetHomeProducts(repository),
+    getHomeCategories: GetHomeCategories(repository),
+  );
+}
 
+class FakeHomeRepository implements HomeRepository {
   final requestedCategoryIds = <int?>[];
   final _products = [
     Product(
