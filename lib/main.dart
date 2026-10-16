@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'core/dummy_data.dart';
 import 'core/product_deep_link.dart';
+import 'core/services/product_api_service.dart';
 import 'core/theme.dart';
 import 'features/details/screens/product_details_screen.dart';
 import 'features/splash/screens/splash_screen.dart';
@@ -12,8 +12,9 @@ void main() {
 
 class MyApp extends StatelessWidget {
   final String? initialRoute;
+  final ProductApiService? apiService;
 
-  const MyApp({super.key, this.initialRoute});
+  const MyApp({super.key, this.initialRoute, this.apiService});
 
   @override
   Widget build(BuildContext context) {
@@ -37,19 +38,21 @@ class MyApp extends StatelessWidget {
       );
     }
 
-    final Product? product = productForDeepLink(settings.name);
-    if (product != null) {
+    final productId = productIdForDeepLink(settings.name);
+    if (productId != null) {
       return MaterialPageRoute<void>(
         settings: settings,
-        builder: (_) => ProductDetailsScreen(product: product),
+        builder: (_) => ProductDetailsLoaderScreen(
+          productId: productId,
+          apiService: apiService ?? ProductApiService(),
+        ),
       );
     }
 
     return MaterialPageRoute<void>(
       settings: settings,
-      builder: (_) => const Scaffold(
-        body: Center(child: Text('Product not found')),
-      ),
+      builder: (_) =>
+          const Scaffold(body: Center(child: Text('Product not found'))),
     );
   }
 }

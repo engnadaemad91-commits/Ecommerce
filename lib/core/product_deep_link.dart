@@ -1,6 +1,4 @@
-import 'dummy_data.dart';
-
-Product? productForDeepLink(String? routeName) {
+String? productIdForDeepLink(String? routeName) {
   if (routeName == null) {
     return null;
   }
@@ -24,5 +22,5 @@ Product? productForDeepLink(String? routeName) {
     productId = segments.single;
   }
 
-  return productId == null ? null : findProductById(productId);
+  return productId;
 }

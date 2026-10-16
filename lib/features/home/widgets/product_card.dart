@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/dummy_data.dart';
+import '../../../core/models/product.dart';
 import '../../../core/theme.dart';
 import '../../details/screens/product_details_screen.dart';
 
@@ -52,17 +52,28 @@ class ProductCard extends StatelessWidget {
                       borderRadius: const BorderRadius.vertical(
                         top: Radius.circular(24),
                       ),
-                      child: Image.network(
-                        product.imageUrl,
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        height: double.infinity,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          color: AppTheme.background,
-                          alignment: Alignment.center,
-                          child: const Icon(Icons.image_not_supported_outlined),
-                        ),
-                      ),
+                      child: product.imageUrl.isEmpty
+                          ? Container(
+                              color: AppTheme.background,
+                              alignment: Alignment.center,
+                              child: const Icon(
+                                Icons.image_not_supported_outlined,
+                              ),
+                            )
+                          : Image.network(
+                              product.imageUrl,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: double.infinity,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Container(
+                                    color: AppTheme.background,
+                                    alignment: Alignment.center,
+                                    child: const Icon(
+                                      Icons.image_not_supported_outlined,
+                                    ),
+                                  ),
+                            ),
                     ),
                   ),
                   Positioned(
