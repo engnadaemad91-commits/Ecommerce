@@ -15,6 +15,16 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedCategoryIndex = 0;
 
+  List<Product> get _visibleProducts {
+    final selectedCategory = dummyCategories[_selectedCategoryIndex];
+    if (selectedCategory == 'All') {
+      return dummyProducts;
+    }
+    return dummyProducts
+        .where((product) => product.category == selectedCategory)
+        .toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,8 +61,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         CircleAvatar(
                           radius: 24,
-                          backgroundImage: NetworkImage(
-                            dummyUser.profilePictureUrl,
+                          backgroundColor: Colors.white,
+                          child: ClipOval(
+                            child: Image.network(
+                              dummyUser.profilePictureUrl,
+                              width: 48,
+                              height: 48,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(Icons.person_outline),
+                            ),
                           ),
                         ),
                       ],
@@ -134,17 +152,27 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              sliver: SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.7,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                ),
-                delegate: SliverChildBuilderDelegate((context, index) {
-                  return ProductCard(product: dummyProducts[index]);
-                }, childCount: dummyProducts.length),
-              ),
+              sliver: _visibleProducts.isEmpty
+                  ? const SliverToBoxAdapter(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 48),
+                        child: Center(
+                          child: Text('No products in this category yet'),
+                        ),
+                      ),
+                    )
+                  : SliverGrid(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 0.55,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                          ),
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        return ProductCard(product: _visibleProducts[index]);
+                      }, childCount: _visibleProducts.length),
+                    ),
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 24)),
           ],

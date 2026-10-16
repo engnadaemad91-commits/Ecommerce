@@ -5,17 +5,17 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:ecommerce_app_huma_volve/features/home/screens/home_screen.dart';
 import 'package:ecommerce_app_huma_volve/main.dart';
 
 void main() {
   testWidgets('opens product details from a deep link', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(
-      const MyApp(initialRoute: 'ecommerce://product/1'),
-    );
+    await tester.pumpWidget(const MyApp(initialRoute: 'ecommerce://product/1'));
     await tester.pump();
 
     expect(find.text('Classic White Sneakers'), findsOneWidget);
@@ -31,5 +31,21 @@ void main() {
     await tester.pump();
 
     expect(find.text('Product not found'), findsOneWidget);
+  });
+
+  testWidgets('selecting a category filters the product grid', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
+    await tester.pump();
+
+    expect(find.text('Classic White Sneakers'), findsOneWidget);
+    expect(find.text('Denim Jacket'), findsOneWidget);
+
+    await tester.tap(find.text('Clothing'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Denim Jacket'), findsOneWidget);
+    expect(find.text('Classic White Sneakers'), findsNothing);
   });
 }
