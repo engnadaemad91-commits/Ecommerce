@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../../core/failure/error_handler.dart';
 import '../domain/entities/auth_session.dart';
 import '../domain/usecases/login.dart';
 import '../domain/usecases/sign_up.dart';
@@ -24,7 +25,7 @@ class AuthProvider extends ChangeNotifier {
       session = await loginUseCase(email: email.trim(), password: password);
       return true;
     } on DioException catch (error) {
-      errorMessage = _messageFrom(error);
+      errorMessage = ErrorHandler.handle(error).failureMessage;
     } on FormatException catch (error) {
       errorMessage = error.message;
     } catch (error) {
@@ -53,7 +54,7 @@ class AuthProvider extends ChangeNotifier {
       );
       return true;
     } on DioException catch (error) {
-      errorMessage = _messageFrom(error);
+      errorMessage = ErrorHandler.handle(error).failureMessage;
     } on FormatException catch (error) {
       errorMessage = error.message;
     } catch (error) {
@@ -63,17 +64,5 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
     }
     return false;
-  }
-
-  String _messageFrom(DioException error) {
-    final responseMessage = error.response?.data;
-    if (responseMessage is Map<String, dynamic>) {
-      final message = responseMessage['message'];
-      if (message is String && message.isNotEmpty) return message;
-      if (message is List && message.isNotEmpty) {
-        return message.join('\n');
-      }
-    }
-    return error.message ?? 'Could not connect to the authentication service.';
   }
 }

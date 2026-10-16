@@ -1,4 +1,5 @@
 import '../../../../core/domain/entities/product.dart';
+import '../../../../core/utils/image_url_sanitizer.dart';
 
 class ProductModel extends Product {
   ProductModel({
@@ -28,15 +29,9 @@ class ProductModel extends Product {
       throw const FormatException('Invalid product response from store.');
     }
 
-    final imageUrl = images
-        .whereType<String>()
-        .map((image) => image.trim())
-        .firstWhere((image) => image.isNotEmpty, orElse: () => '');
-    if (imageUrl.isEmpty) {
-      throw const FormatException(
-        'Product response does not include an image.',
-      );
-    }
+    final imageUrl = ImageUrlSanitizer.firstValidUrl(
+      images.whereType<String>(),
+    );
 
     final category = json['category'];
     final categoryId = category is Map && category['id'] is num

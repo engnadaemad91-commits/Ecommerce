@@ -1,4 +1,5 @@
 import '../../../../core/domain/entities/product.dart';
+import '../../../../core/utils/image_url_sanitizer.dart';
 import '../repositories/home_repository.dart';
 
 class GetHomeProducts {
@@ -6,7 +7,24 @@ class GetHomeProducts {
 
   final HomeRepository _repository;
 
-  Future<List<Product>> call({int? categoryId, String? title}) {
-    return _repository.fetchProducts(categoryId: categoryId, title: title);
+  Future<List<Product>> call({int? categoryId, String? title}) async {
+    final products = await _repository.fetchProducts(
+      categoryId: categoryId,
+      title: title,
+    );
+    return products.map((product) {
+      final imageUrl = ImageUrlSanitizer.firstValidUrl([product.imageUrl]);
+      return Product(
+        id: product.id,
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        imageUrl: imageUrl,
+        colors: product.colors,
+        sizes: product.sizes,
+        categoryId: product.categoryId,
+        categoryName: product.categoryName,
+      );
+    }).toList();
   }
 }

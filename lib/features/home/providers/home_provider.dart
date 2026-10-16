@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../../core/domain/entities/product.dart';
+import '../../../core/failure/error_handler.dart';
 import '../domain/entities/home_category.dart';
 import '../domain/usecases/get_home_categories.dart';
 import '../domain/usecases/get_home_products.dart';
@@ -54,14 +54,14 @@ class HomeProvider extends ChangeNotifier {
         ..addAll(await categoriesFuture);
       products = await productsFuture;
       status = HomeStatus.loaded;
-    } on DioException {
-      if (requestId != _requestId) return;
-      status = HomeStatus.error;
-      errorMessage = 'Could not connect to the store. Check your connection.';
     } on FormatException catch (error) {
       if (requestId != _requestId) return;
       status = HomeStatus.error;
       errorMessage = error.message;
+    } on Exception catch (error) {
+      if (requestId != _requestId) return;
+      status = HomeStatus.error;
+      errorMessage = ErrorHandler.handle(error).failureMessage;
     }
 
     notifyListeners();
@@ -96,14 +96,14 @@ class HomeProvider extends ChangeNotifier {
       if (requestId != _requestId) return;
       products = results;
       status = HomeStatus.loaded;
-    } on DioException {
-      if (requestId != _requestId) return;
-      status = HomeStatus.error;
-      errorMessage = 'Could not connect to the store. Check your connection.';
     } on FormatException catch (error) {
       if (requestId != _requestId) return;
       status = HomeStatus.error;
       errorMessage = error.message;
+    } on Exception catch (error) {
+      if (requestId != _requestId) return;
+      status = HomeStatus.error;
+      errorMessage = ErrorHandler.handle(error).failureMessage;
     }
 
     notifyListeners();
