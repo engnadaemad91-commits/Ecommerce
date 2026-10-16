@@ -59,6 +59,15 @@ final dummyProducts = [
   ),
 ];
 
+Product? findProductById(String id) {
+  for (final product in dummyProducts) {
+    if (product.id == id) {
+      return product;
+    }
+  }
+  return null;
+}
+
 class CartItem {
   final Product product;
   final int quantity;

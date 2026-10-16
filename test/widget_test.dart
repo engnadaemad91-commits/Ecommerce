@@ -5,26 +5,31 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ecommerce_app_huma_volve/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
-
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+  testWidgets('opens product details from a deep link', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      const MyApp(initialRoute: 'ecommerce://product/1'),
+    );
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('Classic White Sneakers'), findsOneWidget);
+    expect(find.text('Description'), findsOneWidget);
+  });
+
+  testWidgets('shows not found for an unknown product deep link', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      const MyApp(initialRoute: 'ecommerce://product/unknown'),
+    );
+    await tester.pump();
+
+    expect(find.text('Product not found'), findsOneWidget);
   });
 }

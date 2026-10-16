@@ -2,6 +2,18 @@
 
 A new Flutter project.
 
+## Product deep links
+
+On Android, open a product directly with a link in the form
+`ecommerce://product/<id>`, where `<id>` is a product ID from the catalog
+(currently `1` through `4`). For example:
+
+```powershell
+adb shell am start -a android.intent.action.VIEW -d "ecommerce://product/1"
+```
+
+Unknown product IDs open a clear "Product not found" screen.
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
